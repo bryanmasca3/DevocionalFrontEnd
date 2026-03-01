@@ -4,7 +4,7 @@ import Sidebar from "./../Sidebar";
 import Header from "./../Header";
 
 const Main = () => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   return (
     <div className="h-screen flex overflow-hidden relative">
       <Sidebar isSidebarOpen={isSidebarOpen} />
