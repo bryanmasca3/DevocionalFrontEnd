@@ -10,7 +10,7 @@ const Avance = () => {
   const navigate = useNavigate();
   const [rowData, setRowData] = useState([]);  
 
-  const API_URL = "http://localhost:9001/api/v1/usuario";
+  const API_URL = "https://devocionalbackend.onrender.com/api/v1/usuario";
 
   const fetchUsuario = async () => {
     try {

@@ -19,7 +19,7 @@ const Devocional = () => {
     fecha_publicacion: new Date().toISOString().split("T")[0],
   });
 
-  const API_URL = "http://localhost:9001/api/v1/devocional";
+  const API_URL = "https://devocionalbackend.onrender.com/api/v1/devocional";
 
   const fetchDevocional = async () => {
     try {

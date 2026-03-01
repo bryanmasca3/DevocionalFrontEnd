@@ -19,7 +19,7 @@ const Preguntas = () => {
     orden: 0,
     titulo: "",
   });
-  const API_URL = "http://localhost:9001/api/v1/pregunta";
+  const API_URL = "https://devocionalbackend.onrender.com/api/v1/pregunta";
 
   const fetchPregunta = async () => {
     try {

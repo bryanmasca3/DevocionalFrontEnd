@@ -7,7 +7,7 @@ const Home = () => {
   const navigate = useNavigate();
 
   const [rowData, setRowData] = useState([]);
-  const API_URL = "http://localhost:9001/api/v1/devocional/usuario";
+  const API_URL = "https://devocionalbackend.onrender.com/api/v1/devocional/usuario";
 
   // 📡 Obtener devocionales
   const fetchDevocional = async () => {

@@ -21,7 +21,7 @@ const Elementos = () => {
     respuesta: "",
     descripcion: "",
   });
-  const API_URL = "http://localhost:9001/api/v1/elemento";
+  const API_URL = "https://devocionalbackend.onrender.com/api/v1/elemento";
   const fetchElemento = async () => {
     try {
       const response = await axios.get(`${API_URL}?id_pregunta=${id}`);

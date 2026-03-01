@@ -35,7 +35,7 @@ const DevocionalDetalle = () => {
 
     try {
       console.log(payload);
-      await axios.post("http://localhost:9001/api/v1/respuesta", payload);
+      await axios.post("https://devocionalbackend.onrender.com/api/v1/respuesta", payload);
       await handlerUpdateDevocional();
       await fetchDetalle();
     } catch (error) {
@@ -46,7 +46,7 @@ const DevocionalDetalle = () => {
   const handlerUpdateDevocional = async () => {
     try {
       await axios.put(
-        `http://localhost:9001/api/v1/devocional/${id}/usuario`,
+        `https://devocionalbackend.onrender.com/api/v1/devocional/${id}/usuario`,
         {},
         {
           headers: {
@@ -63,7 +63,7 @@ const DevocionalDetalle = () => {
       console.log(user);
       console.log("************************");
       const response = await axios.get(
-        `http://localhost:9001/api/v1/devocional/${id}/usuario`,
+        `https://devocionalbackend.onrender.com/api/v1/devocional/${id}/usuario`,
         {
           headers: {
             Authorization: `Bearer ${user.token}`,

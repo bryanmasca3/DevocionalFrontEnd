@@ -7,7 +7,7 @@ const AvanceDetalle = () => {
    const { id } = useParams();
   const [data, setData] = useState([]);
 
-  const API_URL = `http://localhost:9001/api/v1/avance/${id}/usuario`;
+  const API_URL = `https://devocionalbackend.onrender.com/api/v1/avance/${id}/usuario`;
 
   useEffect(() => {
     const fetchData = async () => {

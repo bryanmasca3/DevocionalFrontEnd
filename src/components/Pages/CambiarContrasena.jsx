@@ -24,7 +24,7 @@ const CambiarContrasena = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:9001/api/v1/login/actualizar-contrasena",
+        "https://devocionalbackend.onrender.com/api/v1/login/actualizar-contrasena",
         {
           correo: user.correo,
           nuevaContrasena: formData.nuevaContrasena,
