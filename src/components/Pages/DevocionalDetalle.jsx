@@ -95,7 +95,7 @@ const DevocionalDetalle = () => {
     fetchDetalle();
   }, [id]);
   return (
-    <div className="min-h-screen  p-6">
+    <div className="min-h-screen  md:p-6 p-0">
       <div className="mx-auto bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
         <div className="bg-indigo-600 p-8 text-white flex justify-between">
           <h1 className="text-3xl font-bold">Devocional </h1>
@@ -106,7 +106,7 @@ const DevocionalDetalle = () => {
             ← Volver al calendario
           </button>
         </div>
-        <div className="p-8">
+        <div className="md:p-4 p-8">
           {loading ? (
             <div className="flex justify-center py-10">
               <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-600"></div>
@@ -153,7 +153,7 @@ const DevocionalDetalle = () => {
                           </h3>
                         </div>
 
-                        <div className="ml-11 space-y-6">
+                        <div className="md:ml-11 space-y-6">
                           {pregunta.reflexion && (
                             <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 text-slate-700 text-sm italic">
                               <span className="font-bold not-italic block mb-1 uppercase text-[10px] tracking-widest text-slate-500">

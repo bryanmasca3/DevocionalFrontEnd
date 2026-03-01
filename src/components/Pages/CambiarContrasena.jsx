@@ -3,7 +3,7 @@ import { useAuth } from "./AuthContext";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 const CambiarContrasena = () => {
-  const { user, login } = useAuth();
+  const { user, login, logout } = useAuth();
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -32,7 +32,8 @@ const CambiarContrasena = () => {
       );
       console.log(response.data);
       if (response.data.token) {
-        login(response.data);
+        //login(response.data);
+        logout();
       }
     } catch (error) {
       console.error(error);
