@@ -11,6 +11,12 @@ const DevocionalDetalle = () => {
   const [detalle, setDetalle] = useState(null);
   const [loading, setLoading] = useState(true);
   const [respuestas, setRespuestas] = useState({});
+  const [loadingGuardar, setLoadingGuardar] = useState(false);
+  const [ensenanzas, setEnsenanzas] = useState([]);
+  const [curiosidades, setCuriosidades] = useState([]);
+  const [preguntasExtra, setPreguntasExtra] = useState([]);
+  const [reflexionesGuardadas, setReflexionesGuardadas] = useState(false);
+  const [loadingRespuestaPreguntaId, setLoadingRespuestaPreguntaId] = useState(null);
 
   const handleChange = (elementoId, value) => {
     setRespuestas((prev) => ({
@@ -33,6 +39,7 @@ const DevocionalDetalle = () => {
         id_pregunta: preguntaId,
       }));
 
+    setLoadingRespuestaPreguntaId(preguntaId);
     try {
       console.log(payload);
       await axios.post("https://devocionalbackend.onrender.com/api/v1/respuesta", payload);
@@ -40,9 +47,51 @@ const DevocionalDetalle = () => {
       await fetchDetalle();
     } catch (error) {
       console.error("Error al enviar las respuestas:", error);
+    } finally {
+      setLoadingRespuestaPreguntaId(null);
     }
   };
+  const isGuardarDisabled = loadingGuardar || reflexionesGuardadas;
 
+  const guardarReflexiones = async () => {
+    if (loadingGuardar) return;
+
+    const ensenanzasValidas = ensenanzas.map((e) => String(e || "").trim()).filter((e) => e !== "");
+    const curiosidadesValidas = curiosidades.map((c) => String(c || "").trim()).filter((c) => c !== "");
+    const preguntasValidas = preguntasExtra.map((p) => String(p || "").trim()).filter((p) => p !== "");
+
+    if (ensenanzasValidas.length === 0 && curiosidadesValidas.length === 0 && preguntasValidas.length === 0) {
+      alert("Escribe al menos una enseñanza, curiosidad o pregunta antes de guardar.");
+      return;
+    }
+
+    setLoadingGuardar(true);
+
+    try {
+      const payload = {
+        id_usuario: user._id,
+        id_devocional: detalle.devocional._id,
+        ensenanzas: ensenanzasValidas,
+        curiosidades: curiosidadesValidas,
+        preguntas: preguntasValidas,
+      };
+      await axios.post(
+        "https://devocionalbackend.onrender.com/api/v1/respuesta/reflexiva",
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+          },
+        },
+      );
+      setReflexionesGuardadas(true);
+    } catch (error) {
+      console.error(error);
+      alert("Error al guardar");
+    } finally {
+      setLoadingGuardar(false);
+    }
+  };
   const handlerUpdateDevocional = async () => {
     try {
       await axios.put(
@@ -73,6 +122,27 @@ const DevocionalDetalle = () => {
       const data = response.data;
       console.log(data);
       setDetalle(data);
+      const nEnsenanza = data.devocional.ensenanza || 0;
+      const nCuriosidad = data.devocional.curiosidad || 0;
+      const nPreguntas = data.devocional.preguntas || 0;
+      const arrEnsenanza = Array.isArray(data.reflexivo?.ensenanza) ? data.reflexivo.ensenanza : [];
+      const arrCuriosidad = Array.isArray(data.reflexivo?.curiosidad) ? data.reflexivo.curiosidad : [];
+      const arrPreguntas = Array.isArray(data.reflexivo?.preguntas) ? data.reflexivo.preguntas : [];
+      setEnsenanzas(
+        Array.from({ length: nEnsenanza }, (_, i) => (arrEnsenanza[i] != null ? String(arrEnsenanza[i]) : "")),
+      );
+      setCuriosidades(
+        Array.from({ length: nCuriosidad }, (_, i) => (arrCuriosidad[i] != null ? String(arrCuriosidad[i]) : "")),
+      );
+      setPreguntasExtra(
+        Array.from({ length: nPreguntas }, (_, i) => (arrPreguntas[i] != null ? String(arrPreguntas[i]) : "")),
+      );
+      const yaGuardado =
+        arrEnsenanza.some((e) => String(e || "").trim() !== "") ||
+        arrCuriosidad.some((c) => String(c || "").trim() !== "") ||
+        arrPreguntas.some((p) => String(p || "").trim() !== "");
+      setReflexionesGuardadas(yaGuardado);
+
       const respuestasIniciales = {};
 
       data.preguntas.forEach((pregunta) => {
@@ -124,9 +194,9 @@ const DevocionalDetalle = () => {
 
               <div className="prose prose-slate max-w-none">
                 <h2 className="text-sm font-bold uppercase tracking-widest text-indigo-600 mb-2">
-                  Reflexión
+                  Detalles
                 </h2>
-                <p className="text-slate-600 leading-relaxed whitespace-pre-line">
+                <p className="text-slate-600 leading-relaxed whitespace-pre-line font-bold">
                   {detalle.devocional.descripcion}
                 </p>
               </div>
@@ -154,14 +224,6 @@ const DevocionalDetalle = () => {
                         </div>
 
                         <div className="md:ml-11 space-y-6">
-                          {pregunta.reflexion && (
-                            <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 text-slate-700 text-sm italic">
-                              <span className="font-bold not-italic block mb-1 uppercase text-[10px] tracking-widest text-slate-500">
-                                Reflexión:
-                              </span>
-                              "{pregunta.reflexion}"
-                            </div>
-                          )}
                           <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm leading-loose">
                             <div className="flex flex-wrap items-baseline gap-x-2 gap-y-4">
                               {pregunta.elementos &&
@@ -265,6 +327,14 @@ const DevocionalDetalle = () => {
                                   ))}
                             </div>
                           </div>
+                          {pregunta.reflexion && (
+                            <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 text-slate-700 text-sm italic">
+                              <span className="font-bold not-italic block mb-1 uppercase text-[10px] tracking-widest text-slate-500">
+                                Reflexión:
+                              </span>
+                              "{pregunta.reflexion}"
+                            </div>
+                          )}
                           {pregunta.oracion && (
                             <div className="bg-indigo-50/50 p-4 rounded-xl border border-indigo-100 text-indigo-800 text-sm italic">
                               <span className="font-bold not-italic block mb-1 uppercase text-[10px] tracking-widest">
@@ -280,11 +350,11 @@ const DevocionalDetalle = () => {
                             <button
                               type="button"
                               onClick={() => handleResponse(pregunta._id)}
-                              disabled={todosRespondidos}
+                              disabled={todosRespondidos || loadingRespuestaPreguntaId === pregunta._id}
                               className={` px-4 py-2 rounded-md transition-colors shadow-sm
                           ${
-                            todosRespondidos
-                              ? "cursor-not-allowed bg-gray-400 cursor-not-allowed text-white"
+                            todosRespondidos || loadingRespuestaPreguntaId === pregunta._id
+                              ? "cursor-not-allowed bg-gray-400 text-white"
                               : " cursor-pointer bg-indigo-600 hover:bg-indigo-700 text-white"
                           }
                         `}
@@ -298,6 +368,103 @@ const DevocionalDetalle = () => {
                       </div>
                     );
                   })}
+              </div>
+              <div className="my-8 border-t border-slate-200"></div>
+              <div>
+                <h2 className="text-sm font-bold uppercase tracking-widest text-indigo-600">
+                  Enseñanza para mi
+                </h2>
+
+                <p className="text-xs text-slate-500 mb-4">
+                  Escribe las enseñanzas que aprendiste de este devocional.
+                </p>
+
+                <div className="space-y-3">
+                  {ensenanzas.map((valor, index) => (
+                    <input
+                      key={index}
+                      type="text"
+                      disabled={reflexionesGuardadas || loadingGuardar}
+                      value={valor}
+                      onChange={(e) => {
+                        const nuevos = [...ensenanzas];
+                        nuevos[index] = e.target.value;
+                        setEnsenanzas(nuevos);
+                      }}
+                      placeholder={`Enseñanza ${index + 1}`}
+                      className="w-full border border-slate-200 rounded-lg px-3 py-2 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
+                    />
+                  ))}
+                </div>
+              </div>
+              <div>
+                <h2 className="text-sm font-bold uppercase tracking-widest text-indigo-600">
+                  Curiosidades que me sorprendieron
+                </h2>
+
+                <p className="text-xs text-slate-500 mb-4">
+                  Anota datos interesantes o curiosos que descubriste.
+                </p>
+
+                <div className="space-y-3">
+                  {curiosidades.map((valor, index) => (
+                    <input
+                      key={index}
+                      type="text"
+                      disabled={reflexionesGuardadas || loadingGuardar}
+                      value={valor}
+                      onChange={(e) => {
+                        const nuevos = [...curiosidades];
+                        nuevos[index] = e.target.value;
+                        setCuriosidades(nuevos);
+                      }}
+                      placeholder={`Curiosidad ${index + 1}`}
+                      className="w-full border border-slate-200 rounded-lg px-3 py-2 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
+                    />
+                  ))}
+                </div>
+              </div>
+              <div>
+                <h2 className="text-sm font-bold uppercase tracking-widest text-indigo-600">
+                  Preguntas
+                </h2>
+
+                <p className="text-xs text-slate-500 mb-4">
+                  Escribe preguntas que te dejó la reflexión de hoy.
+                </p>
+
+                <div className="space-y-3">
+                  {preguntasExtra.map((valor, index) => (
+                    <input
+                      key={index}
+                      type="text"
+                      value={valor}
+                      disabled={reflexionesGuardadas || loadingGuardar}
+                      onChange={(e) => {
+                        const nuevos = [...preguntasExtra];
+                        nuevos[index] = e.target.value;
+                        setPreguntasExtra(nuevos);
+                      }}
+                      placeholder={`Pregunta ${index + 1}`}
+                      className="w-full border border-slate-200 rounded-lg px-3 py-2 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none"
+                    />
+                  ))}
+                </div>
+              </div>
+              <div className="flex justify-end mt-6">
+                <button
+                  onClick={guardarReflexiones}
+                  disabled={isGuardarDisabled}
+                  className={`bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-lg shadow ${
+                    isGuardarDisabled ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
+                >
+                  {loadingGuardar ? (
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                  ) : (
+                    "Guardar Reflexiones"
+                  )}
+                </button>
               </div>
             </div>
           ) : (

@@ -144,7 +144,7 @@ const items = [
   },
 ];
 
-const Sidebar = ({ isSidebarOpen }) => {
+const Sidebar = ({ isSidebarOpen, setIsSidebarOpen }) => {
   const { user } = useAuth();
 
   const userRole = user?.tipo;
@@ -154,7 +154,6 @@ const Sidebar = ({ isSidebarOpen }) => {
     return item.roles.includes(userRole);
   });
 
- 
   return (
     isSidebarOpen && (
       <aside
@@ -163,15 +162,36 @@ const Sidebar = ({ isSidebarOpen }) => {
         `}
       >
         <div class="flex flex-col h-full">
-          <div class="flex items-center gap-2 px-6 py-5 border-b border-gray-200">
-            <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-bold text-lg">
-              D
+          <div class="flex items-center justify-between gap-2 px-4 py-5 border-b border-gray-200">
+            <div className="flex gap-2">
+              <div class="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white font-bold text-lg">
+                D
+              </div>
+              <div>
+                <h2 class="text-lg font-semibold text-gray-800 leading-tight">
+                  Devocional
+                </h2>
+                <p class="text-xs text-gray-500">SEC</p>
+              </div>
             </div>
-            <div>
-              <h2 class="text-lg font-semibold text-gray-800 leading-tight">
-                Devocional
-              </h2>
-              <p class="text-xs text-gray-500">SEC</p>
+            <div class="block lg:hidden">
+              <button onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
+                <svg
+                  className="w-6 h-6 text-gray-800 dark:text-white"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke="currentColor"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M15 6l-6 6 6 6"
+                  />
+                </svg>
+              </button>
             </div>
           </div>
 
@@ -213,7 +233,7 @@ const Sidebar = ({ isSidebarOpen }) => {
               <span className="text-xs text-gray-500 truncate">
                 {user?.correo}
               </span>
-            </div>                   
+            </div>
           </div>
         </div>
       </aside>

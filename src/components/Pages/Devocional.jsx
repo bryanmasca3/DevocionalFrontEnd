@@ -17,6 +17,10 @@ const Devocional = () => {
     titulo: "",
     descripcion: "",
     fecha_publicacion: new Date().toISOString().split("T")[0],
+    estado_publicacion: true,
+    ensenanza: "",
+    curiosidad: "",
+    preguntas: "",
   });
 
   const API_URL = "https://devocionalbackend.onrender.com/api/v1/devocional";
@@ -24,7 +28,7 @@ const Devocional = () => {
   const fetchDevocional = async () => {
     try {
       const response = await axios.get(API_URL);
-      console.log(response.data); 
+      console.log(response.data);
       setRowData(response.data);
     } catch (error) {
       console.error("Error al cargar devocional:", error);
@@ -47,10 +51,17 @@ const Devocional = () => {
   };
   const handleEditarClick = (data) => {
     setEditingId(data._id);
+    const fechaPublicacion = data.fecha_publicacion
+      ? new Date(data.fecha_publicacion).toISOString().split("T")[0]
+      : new Date().toISOString().split("T")[0];
     setNuevoDevocional({
       titulo: data.titulo,
       descripcion: data.descripcion,
-      fecha_publicacion: data.fecha_publicacion,
+      fecha_publicacion: fechaPublicacion,
+      estado_publicacion: data.estado_publicacion,
+      ensenanza: data.ensenanza,
+      curiosidad: data.curiosidad,
+      preguntas: data.preguntas,
     });
     setIsModalOpen(true);
   };
@@ -72,6 +83,16 @@ const Devocional = () => {
         return fecha.toISOString().split("T")[0];
       },
     },
+    {
+      field: "estado_publicacion",
+      headerName: "Estado",
+      flex: 1,
+      minWidth: 150,
+      valueFormatter: (params) => (params.value ? "Publicado" : "No publicado"),
+    },
+    { field: "ensenanza", headerName: "Ensenanza", flex: 1, minWidth: 100 },
+    { field: "curiosidad", headerName: "Curiosidad", flex: 1, minWidth: 100 },
+    { field: "preguntas", headerName: "Preguntas", flex: 1, minWidth: 100 },
     {
       headerName: "Acciones",
       cellRenderer: (params) => (
@@ -151,6 +172,8 @@ const Devocional = () => {
 
   const handleGuardar = async (e) => {
     e.preventDefault();
+
+    console.log(nuevoDevocional);
     try {
       if (editingId) {
         await axios.put(`${API_URL}/${editingId}`, nuevoDevocional);
@@ -171,6 +194,10 @@ const Devocional = () => {
       titulo: "",
       descripcion: "",
       fecha_publicacion: new Date().toISOString().split("T")[0],
+      estado_publicacion: true,
+      ensenanza: "",
+      curiosidad: "",
+      preguntas: "",
     });
   };
 
@@ -293,6 +320,95 @@ const Devocional = () => {
                         })
                       }
                     />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-1">
+                      N° de Enseñanzas
+                    </label>
+                    <input
+                      required
+                       type="number"
+                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-slate-800 resize-none"
+                      placeholder="1"
+                      value={nuevoDevocional.ensenanza}
+                      onChange={(e) =>
+                        setNuevoDevocional({
+                          ...nuevoDevocional,
+                          ensenanza: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-1">
+                      N° de Curiosidades
+                    </label>
+                    <input
+                      required
+                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-slate-800 resize-none"
+                      placeholder="2"
+                      type="number"
+                      value={nuevoDevocional.curiosidad}
+                      onChange={(e) =>
+                        setNuevoDevocional({
+                          ...nuevoDevocional,
+                          curiosidad: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-1">
+                      N° de Preguntas
+                    </label>
+                    <input
+                      required
+                       type="number"
+                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all text-slate-800 resize-none"
+                      placeholder="1"
+                      value={nuevoDevocional.preguntas}
+                      onChange={(e) =>
+                        setNuevoDevocional({
+                          ...nuevoDevocional,
+                          preguntas: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">
+                      Estado de Publicación
+                    </label>
+
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setNuevoDevocional({
+                          ...nuevoDevocional,
+                          estado_publicacion:
+                            !nuevoDevocional.estado_publicacion,
+                        })
+                      }
+                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                        nuevoDevocional.estado_publicacion
+                          ? "bg-green-600"
+                          : "bg-gray-300"
+                      }`}
+                    >
+                      <span
+                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                          nuevoDevocional.estado_publicacion
+                            ? "translate-x-6"
+                            : "translate-x-1"
+                        }`}
+                      />
+                    </button>
+
+                    <span className="ml-3 text-sm text-slate-600">
+                      {nuevoDevocional.estado_publicacion
+                        ? "Publicado"
+                        : "No publicado"}
+                    </span>
                   </div>
                 </div>
 
