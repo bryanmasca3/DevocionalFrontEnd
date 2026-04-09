@@ -18,6 +18,10 @@ import CambiarContrasena from "./components/Pages/CambiarContrasena";
 import Avance from "./components/Pages/Avance";
 import AvanceDetalle from "./components/Pages/AvanceDetalle";
 import AvanceRedirect from "./components/Pages/AvanceRedirect";
+
+/** Debe coincidir con `roles` en Sidebar (rutas solo administrador). */
+const ADMIN_ROLES = ["adminitrador"];
+
 function App() {
   const [count, setCount] = useState(0);
   ModuleRegistry.registerModules([AllCommunityModule]);
@@ -55,15 +59,51 @@ function App() {
               {/* Accesibles por cualquier usuario logueado */}
               <Route index element={<Home />} />
               <Route path="devocional/:id" element={<DevocionalDetalle />} />
+              {/* <Route
+                path="devocional/:id"
+                element={
+                  <ProtectedRoute allowedRoles={ADMIN_ROLES}>
+                    <DevocionalDetalle />
+                  </ProtectedRoute>
+                }
+              /> */}
               {/* <Route path="avance" element={<Avance />} /> */}
               <Route path="avance" element={<AvanceRedirect />} />
               <Route path="avance/:id" element={<AvanceDetalle />} />
               <Route path="ayuda" element={<div>Ayuda</div>} />
 
-              <Route path="devocional" element={<Devocional />} />
-              <Route path="devocional/:id/preguntas" element={<Preguntas />} />
-              <Route path="preguntas/:id/elementos" element={<Elementos />} />
-              <Route path="usuarios" element={<Usuarios />} />
+              <Route
+                path="devocional"
+                element={
+                  <ProtectedRoute allowedRoles={ADMIN_ROLES}>
+                    <Devocional />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="devocional/:id/preguntas"
+                element={
+                  <ProtectedRoute allowedRoles={ADMIN_ROLES}>
+                    <Preguntas />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="preguntas/:id/elementos"
+                element={
+                  <ProtectedRoute allowedRoles={ADMIN_ROLES}>
+                    <Elementos />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="usuarios"
+                element={
+                  <ProtectedRoute allowedRoles={ADMIN_ROLES}>
+                    <Usuarios />
+                  </ProtectedRoute>
+                }
+              />
             </Route>
           </Routes>
         </AuthProvider>
